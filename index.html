@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今より前に進めるリアル作業会</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #FAFAF7;
+      --bg2:     #F5EFE8;
+      --blush:   #EDD8D0;
+      --muted:   #C4A89C;
+      --accent:  #9E8078;
+      --deep:    #5C4840;
+      --text:    #3A3330;
+      --text-lt: #8A7E78;
+      --line:    rgba(196,168,156,0.35);
+      --white:   #FFFFFF;
+      --font:    'Noto Sans JP', sans-serif;
+      --serif:   'Noto Serif JP', serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      overflow-x: hidden;
+      font-weight: 300;
+    }
+
+    /* ===== Progress Bar ===== */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(90deg, var(--muted), var(--blush));
+      width: 0%; z-index: 1000; transition: width 0.1s;
+    }
+
+    /* ===== Nav ===== */
+    nav {
+      position: fixed; top: 2px; left: 0; right: 0;
+      z-index: 999; padding: 20px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(250,250,247,0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-logo {
+      font-family: var(--serif); font-size: 13px; font-weight: 400;
+      letter-spacing: 0.2em; color: var(--text);
+      text-decoration: none; text-transform: uppercase;
+    }
+    .nav-cta {
+      font-size: 11px; letter-spacing: 0.2em; color: var(--accent);
+      text-decoration: none; font-weight: 500; text-transform: uppercase;
+      border-bottom: 1px solid var(--muted); padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.65; }
+
+    /* ===== Container ===== */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 48px; }
+
+    /* ===== Section Label ===== */
+    .label {
+      font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted); font-weight: 400; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .label::after { content: ''; width: 40px; height: 1px; background: var(--muted); opacity: 0.6; }
+
+    /* ===== Headings ===== */
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 400; color: var(--text);
+      line-height: 1.55; word-break: keep-all;
+      margin-bottom: 32px; letter-spacing: 0.02em;
+    }
+    h3 {
+      font-family: var(--serif);
+      font-size: 20px; font-weight: 400;
+      color: var(--text); line-height: 1.6; word-break: keep-all;
+    }
+    p { color: var(--text-lt); font-size: 15px; }
+
+    /* ===== Fade-in ===== */
+    .fi { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fi.in { opacity: 1; transform: translateY(0); }
+    .fi-d1 { transition-delay: 0.1s; }
+    .fi-d2 { transition-delay: 0.2s; }
+    .fi-d3 { transition-delay: 0.3s; }
+
+    /* ===== Divider ===== */
+    .divider { width: 100%; height: 1px; background: var(--line); }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-block; text-decoration: none;
+      font-size: 11px; letter-spacing: 0.22em; font-weight: 500;
+      padding: 15px 40px; border-radius: 0;
+      transition: all 0.25s; text-transform: uppercase;
+    }
+    .btn-dark { background: var(--deep); color: var(--white); border: 1px solid var(--deep); }
+    .btn-dark:hover { background: var(--text); border-color: var(--text); }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--muted); }
+    .btn-outline:hover { background: var(--blush); }
+    .btn-white { background: var(--white); color: var(--deep); border: 1px solid var(--white); }
+    .btn-white:hover { background: var(--bg2); }
+    .btn-outline-white { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.5); }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+    /* ===== Hero ===== */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--bg);
+    }
+    .hero-text {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 64px 80px max(48px, calc((100vw - 1080px)/2 + 48px));
+    }
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 32px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--muted); }
+    #hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4.2vw, 54px);
+      font-weight: 300; line-height: 1.65;
+      color: var(--text); word-break: keep-all;
+      margin-bottom: 28px; letter-spacing: 0.02em;
+    }
+    #hero h1 em { font-style: normal; color: var(--accent); font-weight: 400; }
+    .hero-sub {
+      font-size: 14px; color: var(--text-lt);
+      line-height: 2; margin-bottom: 40px; font-weight: 300;
+    }
+    .hero-dates { display: flex; flex-direction: column; gap: 10px; margin-bottom: 48px; }
+    .hero-date-item {
+      font-size: 12px; letter-spacing: 0.08em;
+      color: var(--text-lt); display: flex; align-items: center; gap: 12px;
+    }
+    .hero-date-item::before { content: '—'; color: var(--muted); }
+    .hero-img-wrap {
+      position: relative; overflow: hidden;
+    }
+    .hero-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      object-position: center top;
+      filter: brightness(1.02) saturate(0.88) contrast(0.95);
+    }
+    .hero-img-wrap::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(to right, var(--bg) 0%, transparent 25%),
+        linear-gradient(to bottom, transparent 65%, var(--bg) 100%);
+    }
+
+    /* ===== Empathy ===== */
+    #empathy { background: var(--bg2); padding: 100px 0; }
+    .empathy-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      margin-top: 40px;
+    }
+    .empathy-item {
+      padding: 22px 32px; border-top: 1px solid var(--line);
+      display: flex; align-items: flex-start; gap: 18px;
+    }
+    .empathy-item:nth-child(odd) { border-right: 1px solid var(--line); }
+    .empathy-bottom { grid-column: 1 / -1; height: 1px; background: var(--line); }
+    .empathy-num { font-family: var(--serif); font-size: 11px; color: var(--muted); flex-shrink: 0; margin-top: 3px; letter-spacing: 0.1em; }
+    .empathy-text { font-size: 14px; color: var(--text); line-height: 1.8; font-weight: 300; }
+
+    /* ===== About ===== */
+    #about { background: var(--bg); padding: 120px 0; }
+    .about-inner { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
+    .about-side { position: sticky; top: 120px; }
+    .about-side h2 { font-size: clamp(22px, 2.8vw, 32px); margin-bottom: 0; }
+    .about-body p { font-size: 15px; color: var(--text-lt); line-height: 2.2; margin-bottom: 24px; font-weight: 300; }
+    .about-body p:last-child { margin-bottom: 0; }
+    .about-body strong { color: var(--text); font-weight: 400; }
+
+    /* ===== Detail ===== */
+    #detail { background: var(--bg2); padding: 120px 0; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 56px; }
+    .detail-card { background: var(--white); padding: 40px; position: relative; }
+    .detail-card-label {
+      font-size: 10px; letter-spacing: 0.25em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .detail-card-label::before { content: ''; width: 20px; height: 1px; background: var(--muted); opacity: 0.6; }
+    .detail-card h3 { margin-bottom: 6px; }
+    .venue-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; letter-spacing: 0.05em; }
+    .detail-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .detail-row .material-icons { font-size: 15px; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+    .detail-row span { font-size: 14px; color: var(--text-lt); }
+    .detail-drink {
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 13px; color: var(--accent);
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 400; letter-spacing: 0.05em;
+    }
+    .detail-drink .material-icons { font-size: 15px; }
+    .map-link {
+      color: var(--accent); text-decoration: none;
+      font-size: 13px; border-bottom: 1px solid var(--line);
+      padding-bottom: 1px; transition: border-color 0.2s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .map-link:hover { border-color: var(--accent); }
+    .fee-wrap {
+      margin-top: 2px; background: var(--deep); padding: 48px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
+    }
+    .fee-label { font-size: 11px; letter-spacing: 0.2em; color: rgba(255,255,255,0.55); text-transform: uppercase; margin-bottom: 6px; }
+    .fee-amount { font-family: var(--serif); font-size: 48px; font-weight: 300; color: var(--white); line-height: 1; }
+    .fee-note { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 0.1em; }
+
+    /* ===== Benefit ===== */
+    #benefit { background: var(--bg); padding: 120px 0; }
+    .benefit-list { margin-top: 56px; }
+    .benefit-item {
+      display: grid; grid-template-columns: 64px 1fr;
+      gap: 24px; align-items: start;
+      padding: 28px 0; border-top: 1px solid var(--line);
+    }
+    .benefit-item:last-child { border-bottom: 1px solid var(--line); }
+    .benefit-num { font-family: var(--serif); font-size: 13px; color: var(--muted); letter-spacing: 0.1em; padding-top: 3px; }
+    .benefit-content h4 { font-family: var(--serif); font-size: 16px; font-weight: 400; color: var(--text); line-height: 1.7; word-break: keep-all; }
+
+    /* ===== Host ===== */
+    #host { background: var(--bg2); padding: 120px 0; }
+    .host-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .host-img-wrap { position: relative; aspect-ratio: 3/4; overflow: hidden; }
+    .host-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: top; filter: saturate(0.9); }
+    .host-img-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, var(--bg2) 0%, transparent 35%);
+    }
+    .host-name { font-family: var(--serif); font-size: 32px; font-weight: 300; color: var(--text); margin-bottom: 8px; letter-spacing: 0.05em; }
+    .host-role { font-size: 11px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+    .host-body { font-size: 14px; color: var(--text-lt); line-height: 2.2; font-weight: 300; }
+
+    /* ===== CTA ===== */
+    #cta { background: var(--deep); padding: 120px 0; text-align: center; }
+    #cta .label { color: rgba(255,255,255,0.45); justify-content: center; }
+    #cta .label::after { background: rgba(255,255,255,0.25); }
+    #cta h2 { color: var(--white); }
+    #cta p { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 48px; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ===== Apply ===== */
+    #apply { background: var(--bg); padding: 120px 0; }
+    .apply-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 56px; }
+    .apply-block { background: var(--white); padding: 48px; }
+    .apply-block h3 { margin-bottom: 16px; }
+    .apply-block > p { font-size: 14px; color: var(--text-lt); margin-bottom: 28px; }
+    .embed-box { background: var(--bg2); overflow: hidden; }
+    .embed-box iframe { border: none; width: 100%; display: block; }
+    .line-box {
+      background: var(--bg2); padding: 48px 32px;
+      display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center;
+    }
+    .line-box .material-icons { font-size: 36px; color: var(--muted); }
+
+    /* ===== Footer ===== */
+    footer {
+      background: var(--text); padding: 36px 48px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    footer p { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      #hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-text { padding: 100px 24px 56px; }
+      .hero-img-wrap { height: 70vw; }
+      .hero-img-wrap::before { background: linear-gradient(to bottom, transparent 60%, var(--bg) 100%); }
+      .empathy-grid { grid-template-columns: 1fr; }
+      .empathy-item:nth-child(odd) { border-right: none; }
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+      .about-side { position: static; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .host-inner { grid-template-columns: 1fr; gap: 40px; }
+      .apply-grid { grid-template-columns: 1fr; }
+      .fee-wrap { flex-direction: column; }
+      footer { padding: 28px 24px; }
+      .container { padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav id="nav">
+  <a href="#" class="nav-logo">Real Work Session</a>
+  <a href="#apply" class="nav-cta">申し込む</a>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-text">
+    <p class="hero-eyebrow fi">今より前に進める時間</p>
+    <h1 class="fi fi-d1">ひとりじゃ<br>進まないなら、<br><em>一緒に動こう。</em></h1>
+    <p class="hero-sub fi fi-d2">リアルで一緒に手を動かす、作業会です。</p>
+    <div class="hero-dates fi fi-d2">
+      <div class="hero-date-item">5月27日（水）京都壬生</div>
+      <div class="hero-date-item">6月5日（金）兵庫伊丹</div>
+    </div>
+    <div class="fi fi-d3">
+      <a href="https://forms.gle/i3JCuUu6D1moiRjY6" target="_blank" class="btn btn-dark">申し込みはこちら</a>
+    </div>
+  </div>
+  <div class="hero-img-wrap">
+    <img src="sagyokai_media/hero.png" alt="ちかげ">
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Empathy -->
+<section id="empathy">
+  <div class="container">
+    <p class="label fi">こんな方へ</p>
+    <h2 class="fi">こんなこと、ありませんか？</h2>
+    <div class="empathy-grid">
+      <div class="empathy-item fi fi-d1"><span class="empathy-num">01</span><span class="empathy-text">ひとりだと作業が進まない</span></div>
+      <div class="empathy-item fi fi-d2"><span class="empathy-num">02</span><span class="empathy-text">PC作業に苦手意識がある</span></div>
+      <div class="empathy-item fi fi-d1"><span class="empathy-num">03</span><span class="empathy-text">公式LINEを整えたい</span></div>
+      <div class="empathy-item fi fi-d2"><span class="empathy-num">04</span><span class="empathy-text">今自分に必要なAI活用を知りたい</span></div>
+      <div class="empathy-item fi fi-d1"><span class="empathy-num">05</span><span class="empathy-text">"やりたいこと"はあるのに止まっている</span></div>
+      <div class="empathy-item fi fi-d2"><span class="empathy-num">06</span><span class="empathy-text">セミナー準備が進まない</span></div>
+      <div class="empathy-item fi fi-d1"><span class="empathy-num">07</span><span class="empathy-text">Canvaでデザインを作りたい</span></div>
+      <div class="empathy-item fi fi-d2"><span class="empathy-num">08</span><span class="empathy-text">相談しながら進めたい</span></div>
+      <div class="empathy-bottom"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- About -->
+<section id="about">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-side fi">
+        <p class="label">About</p>
+        <h2>リアルで<br>一緒に進める<br>時間</h2>
+      </div>
+      <div class="about-body fi fi-d1">
+        <p>「やりたいことがある。でも、なかなか進まない。」<br>そんな日が続いているなら、ぜひリアルで一緒にやりましょう。</p>
+        <p>ただ来て、好きな作業を進めるだけ。</p>
+        <p>一人でやるより、絶対スムーズ。わからないことはその場でサポートするから、「難しいかも」と思っていたことも前に進む。AI活用のサポートもするよ。</p>
+        <p>さあ、<strong>一緒に動き出しませんか？</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Detail -->
+<section id="detail">
+  <div class="container">
+    <p class="label fi">Detail</p>
+    <h2 class="fi">開催詳細</h2>
+    <div class="detail-grid">
+      <div class="detail-card fi fi-d1">
+        <p class="detail-card-label">Date 01 — 京都</p>
+        <h3>お菓子屋「あいのかほり」</h3>
+        <p class="venue-sub">9期あずみんのお店・京都壬生</p>
+        <div class="detail-row"><span class="material-icons">calendar_today</span><span>5月27日（水）12:00 〜 15:00</span></div>
+        <div class="detail-row"><span class="material-icons">location_on</span><span>京都市壬生</span></div>
+        <div class="detail-row">
+          <span class="material-icons">map</span>
+          <!-- ✅ Google MapsのURLをhrefに入れてください -->
+          <a href="#" class="map-link" target="_blank"><span class="material-icons" style="font-size:13px;">open_in_new</span>地図を確認する</a>
+        </div>
+        <div class="detail-drink"><span class="material-icons">local_cafe</span>プチおやつ＆ドリンク付き</div>
+      </div>
+      <div class="detail-card fi fi-d2">
+        <p class="detail-card-label">Date 02 — 兵庫・伊丹</p>
+        <h3>デーツのマインちゃん邸</h3>
+        <p class="venue-sub">10期マインちゃん宅・兵庫県伊丹市</p>
+        <div class="detail-row"><span class="material-icons">calendar_today</span><span>6月5日（金）12:00 〜 15:00</span></div>
+        <div class="detail-row"><span class="material-icons">location_on</span><span>兵庫県伊丹市（詳細は申込後）</span></div>
+        <div class="detail-drink"><span class="material-icons">local_cafe</span>デーツクッキー＆ドリンク付き</div>
+      </div>
+    </div>
+    <div class="fee-wrap fi">
+      <div>
+        <p class="fee-label">参加費（1会場につき）</p>
+        <p class="fee-note" style="margin-top:6px;">定員になり次第締切</p>
+      </div>
+      <p class="fee-amount">¥8,000</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Benefit -->
+<section id="benefit">
+  <div class="container">
+    <p class="label fi">こんな時間に</p>
+    <h2 class="fi">参加するとこうなる</h2>
+    <div class="benefit-list">
+      <div class="benefit-item fi fi-d1"><p class="benefit-num">01</p><div class="benefit-content"><h4>後回しにしていたタスクに、この日だけは集中して向き合える</h4></div></div>
+      <div class="benefit-item fi fi-d2"><p class="benefit-num">02</p><div class="benefit-content"><h4>横に仲間がいることで、不思議と手が動く</h4></div></div>
+      <div class="benefit-item fi fi-d1"><p class="benefit-num">03</p><div class="benefit-content"><h4>AIやツールの使い方も、その場でサポートしてもらえる</h4></div></div>
+      <div class="benefit-item fi fi-d2"><p class="benefit-num">04</p><div class="benefit-content"><h4>PC作業の「どうすればいい？」をその場で解決できる</h4></div></div>
+      <div class="benefit-item fi fi-d1"><p class="benefit-num">05</p><div class="benefit-content"><h4>Canvaや公式LINEなど、気になっていたツールの理解がもっと深まる</h4></div></div>
+      <div class="benefit-item fi fi-d2"><p class="benefit-num">06</p><div class="benefit-content"><h4>「今日これだけ進んだ」という小さな達成感が積み重なる</h4></div></div>
+      <div class="benefit-item fi fi-d1"><p class="benefit-num">07</p><div class="benefit-content"><h4>同じ熱量を持つ仲間と繋がれる</h4></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Host -->
+<section id="host">
+  <div class="container">
+    <div class="host-inner">
+      <div class="host-img-wrap fi">
+        <img src="sagyokai_media/host.png" alt="ちかげ">
+      </div>
+      <div class="fi fi-d1">
+        <p class="label">Host</p>
+        <p class="host-name">ちかげ</p>
+        <p class="host-role">今よりラクを叶える、AI × 実務サポート</p>
+        <p class="host-body">店長業務10年以上の現場経験を経て、現在は複数のコミュニティ運営に関わりながら毎月5回以上のイベント運営を実施。AIを実務に取り入れながら、日々の業務をもっとラクに回す方法を模索しています。そんな中で間近に見てきたのは、「やりたいことはたくさんあるのに、目の前の作業に追われてなかなか前に進めない」という起業家さんたちの姿でした。もっと自分のやりたいことにフォーカスできる毎日を、一緒に作っていけたらと思っています。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <p class="label fi">申し込み</p>
+    <h2 class="fi">一緒に、前に進もう。</h2>
+    <p class="fi">定員になり次第締め切ります。気になったときが、動くタイミングです。</p>
+    <div class="cta-btns fi fi-d1">
+      <a href="https://forms.gle/i3JCuUu6D1moiRjY6" target="_blank" class="btn btn-white">フォームで申し込む</a>
+      <a href="https://qhexurp0.autosns.app/line" target="_blank" class="btn btn-outline-white">LINE公式を追加する</a>
+    </div>
+  </div>
+</section>
+
+<!-- Apply -->
+<section id="apply">
+  <div class="container">
+    <p class="label fi" style="margin-top:80px;">お申し込み</p>
+    <h2 class="fi">申し込みフォーム</h2>
+    <div class="apply-grid">
+      <div class="apply-block fi fi-d1">
+        <h3>申し込みフォーム</h3>
+        <p>以下のフォームからお申し込みください。</p>
+        <div class="embed-box">
+          <iframe src="https://forms.gle/i3JCuUu6D1moiRjY6" height="560" title="申し込みフォーム"></iframe>
+        </div>
+      </div>
+      <div class="apply-block fi fi-d2" id="line">
+        <h3>公式LINE</h3>
+        <p>最新情報・ご質問はLINEからどうぞ。</p>
+        <div class="line-box">
+          <span class="material-icons">chat_bubble_outline</span>
+          <a href="https://qhexurp0.autosns.app/line" target="_blank" class="btn btn-dark">友だち追加はこちら</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="height:80px;background:var(--bg);"></div>
+
+<footer>
+  <p>Real Work Session</p>
+  <p>&copy; 2026 ちかげ / AI × 実務サポート</p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress-bar').style.width = p + '%';
+  });
+  // Nav
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+  });
+  // Fade in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
