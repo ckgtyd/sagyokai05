@@ -328,9 +328,10 @@
     @media (max-width: 768px) {
       nav { padding: 16px 24px; }
       #hero { grid-template-columns: 1fr; min-height: auto; }
-      .hero-text { padding: 100px 24px 56px; }
-      .hero-img-wrap { height: 70vw; }
-      .hero-img-wrap::before { background: linear-gradient(to bottom, transparent 60%, var(--bg) 100%); }
+      .hero-text { padding: 100px 24px 48px; }
+      .hero-img-wrap { height: 92vw; max-height: 480px; }
+      .hero-img-wrap img { object-position: center 28%; }
+      .hero-img-wrap::before { background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%); }
       .empathy-grid { grid-template-columns: 1fr; }
       .empathy-item:nth-child(odd) { border-right: none; }
       .about-inner { grid-template-columns: 1fr; gap: 40px; }
